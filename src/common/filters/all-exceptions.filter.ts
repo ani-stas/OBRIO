@@ -32,7 +32,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
       this.logger.error(`Exception: ${exception.message}, status ${status}`);
 
       responseBody.message = exception.message;
-      responseBody.status = status;
+      responseBody.statusCode = status;
 
       httpAdapter.reply(ctx.getResponse(), responseBody, status);
     } else {
@@ -41,7 +41,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
       const httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
 
       responseBody.message = 'Internal server error :(';
-      responseBody.status = httpStatus;
+      responseBody.statusCode = httpStatus;
 
       httpAdapter.reply(ctx.getResponse(), responseBody, httpStatus);
     }

@@ -17,7 +17,7 @@ export class FileController {
   async createFiles(
     @Param() params: UserIdParamDto,
     @Body() dto: CreateFilesDto,
-  ): Promise<string> {
+  ): Promise<FileEntity[]> {
     return await this.fileService.createFiles(params.userId, dto);
   }
 }

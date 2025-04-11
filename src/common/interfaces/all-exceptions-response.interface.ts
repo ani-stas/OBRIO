@@ -1,6 +1,6 @@
 export interface IAllExceptionsResponse {
   path: string;
   timestamp: string;
-  status?: number;
+  statusCode?: number;
   message?: string;
 }

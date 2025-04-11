@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { drive_v3, google } from 'googleapis';
 import { OAuth2Client } from 'google-auth-library';
+import { GOOGLE_DRIVE_VERSION } from 'src/common/constants';
 
 @Injectable()
 export class GoogleDriveSetupService {
@@ -11,7 +12,7 @@ export class GoogleDriveSetupService {
     const oauth2Client = this.createOAuth2Client();
 
     return google.drive({
-      version: 'v3',
+      version: GOOGLE_DRIVE_VERSION,
       auth: oauth2Client,
     });
   }

@@ -1,22 +1,37 @@
-import { Injectable } from '@nestjs/common';
-import { drive_v3 } from 'googleapis';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+} from '@nestjs/common';
 import { GoogleDriveSetupService } from '../google-drive-setup';
 import { ICreateFileInput } from './interfaces';
 import { IFileUpload } from '../file/interfaces';
+import {
+  forbiddenErrorCheck,
+  getFileExtFromMimeType,
+  getFilesTotalSize,
+} from 'src/common/utils';
+import { DEFAULT_FILE_NAME, MAX_FILE_SIZE } from 'src/common/constants';
 
 @Injectable()
 export class GoogleDriveService {
-  private drive: drive_v3.Drive;
-
-  constructor(private readonly driveSetupService: GoogleDriveSetupService) {
-    this.drive = this.driveSetupService.getGoogleDrive();
-  }
+  constructor(private readonly driveSetupService: GoogleDriveSetupService) {}
 
   async createFiles(input: IFileUpload[]): Promise<string> {
+    const totalFilesSize = getFilesTotalSize(input);
+
+    if (totalFilesSize > MAX_FILE_SIZE) {
+      throw new BadRequestException(
+        'Total file size exceeds the Google Drive size limit',
+      );
+    }
+
     await Promise.all(
       input.map(async (file, index) => {
+        const fileExt = getFileExtFromMimeType(file.type);
+
         await this.createFileInDrive({
-          name: `new_file_${index + 1}`,
+          name: `${DEFAULT_FILE_NAME}_${index + 1}.${fileExt}`,
           mimeType: file.type,
           file: file.file,
         });
@@ -27,17 +42,27 @@ export class GoogleDriveService {
   }
 
   private async createFileInDrive(input: ICreateFileInput): Promise<string> {
-    await this.drive.files.create({
-      requestBody: {
-        name: input.name,
-        mimeType: input.mimeType,
-      },
-      media: {
-        mimeType: input.mimeType,
-        body: input.file,
-      },
-    });
+    try {
+      const drive = this.driveSetupService.getGoogleDrive();
 
-    return 'File was successfully created in drive';
+      await drive.files.create({
+        requestBody: {
+          name: input.name,
+          mimeType: input.mimeType,
+        },
+        media: {
+          mimeType: input.mimeType,
+          body: input.file,
+        },
+      });
+
+      return 'File was successfully created in drive';
+    } catch (error: unknown) {
+      if (forbiddenErrorCheck(error)) {
+        throw new ForbiddenException('Google Drive size exceeded');
+      }
+
+      throw error;
+    }
   }
 }
