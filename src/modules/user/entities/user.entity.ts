@@ -12,6 +12,9 @@ export class UserEntity {
   @Column({ length: 30 })
   lastname: string;
 
+  @Column({ length: 30, unique: true })
+  email: string;
+
   @OneToMany(() => FileEntity, (file) => file.user)
   files: FileEntity[];
 }

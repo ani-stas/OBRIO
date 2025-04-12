@@ -28,10 +28,18 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
     if (exception instanceof HttpException) {
       const status = exception.getStatus();
+      const response = exception.getResponse();
 
       this.logger.error(`Exception: ${exception.message}, status ${status}`);
 
-      responseBody.message = exception.message;
+      if (typeof response === 'string') {
+        responseBody.message = response;
+      }
+
+      if (typeof response === 'object' && 'message' in response) {
+        responseBody.message = response.message || 'Unknown error';
+      }
+
       responseBody.statusCode = status;
 
       httpAdapter.reply(ctx.getResponse(), responseBody, status);

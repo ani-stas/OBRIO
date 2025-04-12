@@ -11,6 +11,10 @@ export class UserService {
     private readonly userRepository: Repository<UserEntity>,
   ) {}
 
+  async findOneByEmail(email: string): Promise<UserEntity | null> {
+    return await this.userRepository.findOne({ where: { email } });
+  }
+
   async create(dto: CreateUserDto): Promise<UserEntity> {
     const user = this.userRepository.create(dto);
 

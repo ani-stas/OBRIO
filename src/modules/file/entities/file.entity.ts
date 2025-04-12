@@ -7,7 +7,16 @@ export class FileEntity {
   id: string;
 
   @Column()
-  url: string;
+  name: string;
+
+  @Column()
+  mimeType: string;
+
+  @Column()
+  driveUrl: string;
+
+  @Column()
+  driveId: string;
 
   @ManyToOne(() => UserEntity, (user) => user.files)
   user: UserEntity;

@@ -9,4 +9,5 @@ export enum ContentType {
   APPLICATION_RAR = 'application/x-rar',
   VIDEO_MP4 = 'video/mp4',
   AUDIO_MPEG = 'audio/mpeg',
+  DEFAULT = 'application/octet-stream',
 }

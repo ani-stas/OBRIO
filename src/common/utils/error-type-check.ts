@@ -1,11 +1,11 @@
 import { HttpStatus } from '@nestjs/common';
 
-export const forbiddenErrorCheck = (error: unknown): boolean => {
+export const errorTypeCheck = (error: unknown, status: HttpStatus): boolean => {
   if (
     error &&
     typeof error === 'object' &&
     'status' in error &&
-    error.status === HttpStatus.FORBIDDEN
+    error.status === status
   ) {
     return true;
   }
